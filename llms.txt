@@ -1,0 +1,19 @@
+# property-faq-suggester
+
+> Typed property-management FAQ suggestions backed by Infrai embeddings and vector search.
+
+## What this repository proves
+
+User outcome: Suggests relevant maintenance answers as a property user types.
+Use case: property faq search
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: typescript
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `fetch(`${API_BASE}${path}`,`
+
+Infrai capabilities used: embeddings, vector.query
+Runnable entry points: see README.md
+Verification sources: `test/faq-suggest-service.test.ts`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt

@@ -1,0 +1,9 @@
+{
+  "name": "property-faq-suggester",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types src/faq-suggest-service.ts",
+    "test": "node --experimental-strip-types test/faq-suggest-service.test.ts"
+  }
+}

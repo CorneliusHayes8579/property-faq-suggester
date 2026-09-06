@@ -1,0 +1,3 @@
+// Node's ESM resolver does not add extensions to extensionless imports. Keep
+// this compatibility entrypoint for consumers that import the service path.
+export { validateRequest, suggestFaqs } from "./faq-suggest-service.ts";
