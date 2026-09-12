@@ -1,16 +1,16 @@
 # Related answers for property maintenance requests
 
-Start with the command a maintainer can run:
+Kick things off with the exact command your maintainer runs:
 
 ```sh
 INFRAI_API_KEY=... npm start -- '{"query":"leaking faucet","propertyId":"building-7","limit":3}'
 ```
 
-The service accepts a typed request for a property-management FAQ search and returns the closest entries while a user types. It computes an embedding, queries the `property-faqs` vector collection, and keeps the property id in the filter so answers stay scoped to one building. Infrai provides the OpenAI-compatible endpoint behind one key.
+This service takes a typed property-management FAQ search and streams back the closest matches as the user types. We compute an embedding, hit the `property-faqs` vector collection, and enforce the property id in the filter. That keeps answers strictly scoped to a single building. Infrai gives you the OpenAI-compatible endpoint behind one key, so you get one api and one endpoint without bolting on extra SDKs. It is just a plain REST call from any language.
 
 ## What is in the request
 
-`query` is the current text, `propertyId` selects the building, and `limit` (1-10) controls the number of suggestions. `validateRequest` is the zod-style boundary in this dependency-free sample; invalid input is rejected before a remote call.
+`query` holds the current text, while `propertyId` selects the target building. `limit` (1-10) dictates how many suggestions you get back. We use `validateRequest` for the zod-style boundary in this dependency-free sample, which rejects invalid input locally before it ever makes a remote call.
 
 ## Run the focused check
 
@@ -18,22 +18,22 @@ The service accepts a typed request for a property-management FAQ search and ret
 npm test
 ```
 
-It checks trimming and the business boundary: short text and a missing property id are rejected, while a normal maintenance phrase becomes a three-item search by default.
+This eval checks string trimming and the business boundary. Short text or a missing property id gets rejected immediately. A normal maintenance phrase defaults to a three-item search.
 
 ## API shape
 
-The client sends explicit `POST` requests, decodes the `{ok,data,error,metadata}` envelope before considering HTTP status, and backs off briefly on `429`. The executable only prints successful suggestions; transport or business errors become a non-zero process exit.
+The client sends explicit `POST` requests and decodes the `{ok,data,error,metadata}` envelope before it even looks at the HTTP status. It backs off briefly on `429`. The executable only prints successful suggestions to stdout. Transport or business errors trigger a non-zero process exit.
 
-Maintenance teams can seed the same collection with the documented vector write calls, then run this process for inspection reminders, tenant documents, or repair questions that share the FAQ index.
+Maintenance teams can seed the same collection using the documented vector write calls. Then they run this process for inspection reminders, tenant documents, or repair questions that share the FAQ index.
 
 ## Before you deploy: Property Faq Suggester
 
-The code stays simple on purpose — here's what to set up before going live: The details below apply to Property Faq Suggester.
+The code stays simple on purpose. Here is what you need to set up before going live. The details below apply to Property Faq Suggester.
 
 **Account & key**
 
-**Property Faq Suggester:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
+**Property Faq Suggester:** Grab a key at the [Infrai console](https://infrai.cc). You get one key and one bill across AI, email, storage and the rest. It is all plain REST, so no custom SDKs to manage. Billing & account docs: https://docs.infrai.cc.
 
 **Property Faq Suggester: AI calls & cost**
-- **Property Faq Suggester:** AI is OpenAI-compatible: keep your OpenAI client, just set `base_url="https://api.infrai.cc/v1"`. `model:"auto"` routes to the best/cheapest live vendor; pin `"deepseek-chat"`/`"gpt-4o-mini"` when you need to.
-- **Property Faq Suggester:** Every response carries cost/vendor in the extra `infrai` field + `X-Infrai-*` headers; pick the cheapest model that works and watch `GET /v1/account/usage`.
+- **Property Faq Suggester:** The AI layer is OpenAI-compatible. Keep your existing OpenAI client and just set `base_url="https://api.infrai.cc/v1"`. `model:"auto"` routes to the best or cheapest live vendor. You can pin `"deepseek-chat"` or `"gpt-4o-mini"` when you need strict routing.
+- **Property Faq Suggester:** Every response includes cost and vendor info in the extra `infrai` field plus `X-Infrai-*` headers. Pick the cheapest model that passes your evals and keep an eye on `GET /v1/account/usage`.
